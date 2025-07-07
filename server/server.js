@@ -12,12 +12,12 @@ const app = express();
 // Connect Database
 await connectDB();
 // Middleware
-// app.use(cors())
-app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173", // replace with your frontend URL
-  credentials: true,
-}));
-
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {res.send("Server is Running");});
@@ -31,4 +31,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
