@@ -1,7 +1,8 @@
 import React from "react";
 import Title from "../../components/owner/Title";
 import { assets } from "../../assets/assets";
-
+import axios from "axios";
+import toast from "react-hot-toast"
 const AddCar = () => {
   const currency = import.meta.env.VITE_CURRENCY;
   const [image, setImage] = React.useState(null);
@@ -18,8 +19,42 @@ const AddCar = () => {
     description: "",
   });
 
+  const [isLoading, setIsLoading] = React.useState(false);
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    try {
+      if (isLoading) return null;
+  
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("carData", JSON.stringify(car));
+  
+      const { data } = await axios.post("/api/owner/add-car", formData);
+  
+      if (data.success) {
+        toast.success(data.message);
+        setImage(null);
+        setCar({
+          brand: "",
+          model: "",
+          year: 0,
+          pricePerDay: 0,
+          category: "",
+          transmission: "",
+          fuel_type: "",
+          seating_capacity: 0,
+          location: "",
+          description: "",
+        });
+      }else{
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }finally{
+      setIsLoading(false)
+    }
   };
 
   return (
@@ -168,7 +203,6 @@ const AddCar = () => {
           </div>
         </div>
 
-
         {/* Car Location */}
         <div className="flex flex-col w-full">
           <label htmlFor="">Location</label>
@@ -196,12 +230,15 @@ const AddCar = () => {
             value={car.description}
             onChange={(e) => setCar({ ...car, description: e.target.value })}
           ></textarea>
-          </div>
+        </div>
 
-          <button type="submit" className="flex items-center gap-2 px-4 py-2.5 mt-4 bg-primary w-max text-white rounded-md hover:bg-primary/90 transition-all">
-            <img src={assets.tick_icon} alt="" />
-            List Your Car
-          </button>
+        <button
+          type="submit"
+          className="flex items-center gap-2 px-4 py-2.5 mt-4 bg-primary w-max text-white rounded-md hover:bg-primary/90 transition-all"
+        >
+          <img src={assets.tick_icon} alt="" />
+          {isLoading ? "Listing..." : "List Your Car"}
+        </button>
       </form>
     </div>
   );

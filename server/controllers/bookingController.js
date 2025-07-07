@@ -37,7 +37,7 @@ export const checkAvailabilityOfCar = async (req, res) => {
     let availableCars = await Promise.all(availableCarsPromises);
     availableCars = availableCars.filter((car) => car.isAvailable === true);
 
-    res.json({ success: true, cars: availableCars });
+    res.json({ success: true, availableCars });
   } catch (error) {
     console.log(error.message);
     res.json({
@@ -122,7 +122,7 @@ export const getUserBookings = async (req, res) => {
 //API to get Owner bookings
 export const getOwnerBookings = async (req, res) => {
   try {
-    if(!req.user.role !== "owner") {
+    if(req.user.role !== "owner") {
       return res.json({
         success: false,
         message: "Unauthorized access",

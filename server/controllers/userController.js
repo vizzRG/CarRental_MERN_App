@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import Car from "../models/Car.js";
 
 //Generate Token
 const generateToken = (userId)=>{
@@ -21,8 +22,8 @@ export const registerUser = async (req, res) => {
     }
 
     // checking user exists
-    const userExist = User.findOne({email})
-    if(!userExist){
+    const userExist = await User.findOne({email})
+    if(userExist){
         return res.json({
         success: false,
         message: "User already exists",
@@ -35,7 +36,8 @@ export const registerUser = async (req, res) => {
 
     res.json({
         success : true,
-        data : token
+        message : "User registered successfully",
+        token
     })
 
   } catch (error) {
@@ -68,6 +70,7 @@ export const loginUser = async (req,res)=>{
         const token = generateToken(user._id.toString())
         res.json({
             success : true,
+            message : "User logged in successfully",
             token
         })
 
@@ -95,6 +98,24 @@ export const getUserData = async(req,res)=>{
     res.json({
       succes: false,
       message : error.message
+    })
+  }
+}
+
+
+// get all cars for the frontend
+export const getCars = async(req,res)=>{
+  try {
+    const cars = await Car.find({isAvailable : true})
+    res.json({
+      success: true,
+      cars
+    })
+  } catch (error) {
+    console.log(error.message)
+    res.json({
+      success: false,
+      message: error.message
     })
   }
 }

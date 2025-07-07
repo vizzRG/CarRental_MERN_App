@@ -2,7 +2,6 @@ import imagekit from "../config/imageKit.js";
 import User from "../models/User.js";
 import fs from "fs";
 import Car from "../models/Car.js";
-import { error } from "console";
 import Booking from "../models/Booking.js";
 
 export const changeRoleToOwner = async (req, res) => {
@@ -152,11 +151,10 @@ export const getDashboardData = async (req, res) => {
       .populate("car").sort({createdAt : -1})
 
       const pendingBookings = await Booking.find({owner : _id, status : "pending"})
-      const completedBookings = await Booking.find({owner : _id, status : "completed"})
-
+      const completedBookings = await Booking.find({owner : _id, status : "confirmed"})
 
         // calculate monthlyRevenue from bookings where status is completed
-        const monthlyRevenue = bookings.slice().filter(booking => booking.status === "completed").reduce((total, booking) => total + booking.price, 0);
+        const monthlyRevenue = bookings.slice().filter(booking => booking.status === "confirmed").reduce((total, booking) => total + booking.price, 0);
 
 
         const dashboardData = {
